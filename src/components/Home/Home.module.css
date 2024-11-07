@@ -1,0 +1,256 @@
+/* General styles */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    user-select: none;
+}
+
+/* Tab styles */
+.tab {
+    width: 280px;
+    height: 100vh;
+    background-color: white;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.115);
+    display: flex;
+    flex-direction: column;
+}
+
+.container1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo {
+    padding: 10px;
+    font-size: 50px;
+    font-weight: 700;
+    color: #b7c2ff;
+    cursor: default;
+}
+
+.profile {
+    width: 100px;
+    height: 100px;
+    padding: 20px;
+    /* background-image: url('../images/profile.jpg'); */
+    background-position: center;
+    background-size: cover;
+    border-radius: 50%;
+    border: 3px solid #949494;
+    transition: 0.2s;
+}
+
+.profile:hover {
+    border: 3px solid #5c5c5c;
+    opacity: 0.9;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+.name {
+    text-align: center;
+    position: relative;
+    top: 130px;
+    font-size: 20px;
+    color: #000000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* List styles */
+.list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: 70px;
+    font-size: 25px;
+    font-weight: 500;
+    color: #3b3b3b;
+    align-items: center;
+}
+
+.list div {
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+    transition: background-color 0.2s, outline 0.2s;
+    margin-bottom: 10px;
+}
+
+.list div:hover {
+    background-color: #f0f0f0;
+}
+
+.list div.active {
+    background-color: #b7c2ff;
+    color: white;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.list div:focus {
+    background-color: #d1d7ff;
+    outline: 2px solid #3b3b3b;
+    border-radius: 4px;
+    color: white;
+}
+
+.list div i {
+    margin-right: 8px;
+}
+
+/* Main content styles */
+.container {
+    display: flex;
+}
+
+.customerStaff {
+    flex-grow: 1;
+    height: 100vh;
+    background-color: #ffffff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.categoriesStaff {
+    flex-grow: 1;
+    background-color: #ffffff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Categories and subcategories */
+.categoriesList {
+    margin-top: 20px;
+}
+
+.categoryItem {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.categoryName {
+    display: flex;
+    align-items: center;
+}
+
+.subcategoryList {
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+.subcategoryItem {
+    background-color: #f0f0f0;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    display: flex;
+}
+
+/* Button styles */
+button {
+    padding: 5px 10px;
+    background-color: #b7c2ff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+button:hover {
+    background-color: #8a9bff;
+}
+
+button i {
+    font-size: 16px;
+}
+
+.mainCategoryName {
+    width: 10%;
+    height: 5%;
+}
+
+button i {
+    font-size: 16px;
+}
+
+button .faTrash {
+    font-size: 18px;
+}
+
+.categoryName button {
+    background-color: #969dc4;
+    color: white;
+}
+
+.categoryName button:hover {
+    background-color: #7980ac;
+}
+
+.subcategoryItem button {
+    background-color: #b7c2ff; 
+    color: white;
+}
+
+.subcategoryItem button:hover {
+    background-color: #8a9bff;
+}
+
+/* Style for the search bar */
+.searchBar {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* Style for the customer table */
+.customersList table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.customersList th, .customersList td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.customersList th {
+    background-color: #f7f7f7;
+}
+
+.customersList button {
+    padding: 5px 10px;
+    background-color: #5c6bc0; /* Blue background for edit/delete buttons */
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 4px;
+}
+
+.customersList button:hover {
+    background-color: #3f51b5;
+}
