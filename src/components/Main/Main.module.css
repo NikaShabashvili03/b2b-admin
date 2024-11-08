@@ -1,0 +1,101 @@
+.sidebar{
+    width: 280px;
+    height: 100%;
+
+}
+
+
+.tab {
+    height: 100%;
+    background-color: white;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.115);
+    display: flex;
+    flex-direction: column;
+}
+
+.container1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo {
+    padding: 10px;
+    font-size: 50px;
+    font-weight: 700;
+    color: #b7c2ff;
+    cursor: default;
+}
+
+.profile {
+    width: 100px;
+    height: 100px;
+    padding: 20px;
+    /* background-image: url('../images/profile.jpg'); */
+    background-position: center;
+    background-size: cover;
+    border-radius: 50%;
+    border: 3px solid #949494;
+    transition: 0.2s;
+}
+
+.profile:hover {
+    border: 3px solid #5c5c5c;
+    opacity: 0.9;
+}
+
+.name {
+    text-align: center;
+    font-size: 20px;
+    color: #000000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* List styles */
+.list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: 70px;
+    font-size: 25px;
+    font-weight: 500;
+    color: #3b3b3b;
+    align-items: center;
+}
+
+.list div {
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+    transition: background-color 0.2s, outline 0.2s;
+    margin-bottom: 10px;
+}
+
+.list div:hover {
+    background-color: #f0f0f0;
+}
+
+.list div.active {
+    background-color: #b7c2ff;
+    color: white;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.list div:focus {
+    background-color: #d1d7ff;
+    outline: 2px solid #3b3b3b;
+    border-radius: 4px;
+    color: white;
+}
+
+.list div i {
+    margin-right: 8px;
+}
+
+/* Main content styles */
+.container {
+    display: flex;
+}

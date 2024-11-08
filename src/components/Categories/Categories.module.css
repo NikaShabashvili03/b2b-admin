@@ -1,0 +1,92 @@
+.categoriesStaff {
+    flex-grow: 1;
+    background-color: #ffffff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Categories and subcategories */
+.categoriesList {
+    margin-top: 20px;
+}
+
+.categoryItem {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.categoryName {
+    display: flex;
+    align-items: center;
+}
+
+.subcategoryList {
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+.subcategoryItem {
+    background-color: #f0f0f0;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    display: flex;
+}
+
+/* Button styles */
+button {
+    padding: 5px 10px;
+    background-color: #b7c2ff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+button:hover {
+    background-color: #8a9bff;
+}
+
+button i {
+    font-size: 16px;
+}
+
+.mainCategoryName {
+    width: 10%;
+    height: 5%;
+}
+
+button i {
+    font-size: 16px;
+}
+
+button .faTrash {
+    font-size: 18px;
+}
+
+.categoryName button {
+    background-color: #969dc4;
+    color: white;
+}
+
+.categoryName button:hover {
+    background-color: #7980ac;
+}
+
+.subcategoryItem button {
+    background-color: #b7c2ff; 
+    color: white;
+}
+
+.subcategoryItem button:hover {
+    background-color: #8a9bff;
+}

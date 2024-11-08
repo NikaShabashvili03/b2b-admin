@@ -3,7 +3,7 @@ import styles from './Login.module.css';
 
 function LoginPage() {
   return (
-    <div className={styles.Loginwrap}>
+    <div className={styles.loginwrap}>
       <div className={styles.loginContainer}>
         <h1 className={styles.title}>Admins Login</h1>
         <form className={styles.form}>
