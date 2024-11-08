@@ -4,9 +4,9 @@ import IMG1 from "../../assets/kluchi.png";
 import IMG2 from "../../assets/dencq.png";
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
-// import { TrashIcon, PencilIcon } from '@heroicons/react/outline';
+import { FaTrash, FaPencilAlt } from 'react-icons/fa';
 
-const categories = [
+const initialCategories = [
     {
         id: 1,
         title: 'სანტექნიკა',
@@ -29,7 +29,6 @@ const categories = [
         description: "ეს არის სანტექნიკის კატეგორია",
         links: ["მილები", "საკანალიზაციო მილები", "ონკანები", "სამზარეულოს ონკანები"]
     },
-
     {
         id: 2,
         title: 'ელექტროობა',
@@ -45,43 +44,18 @@ const categories = [
         description: "ეს არის სანტექნიკის კატეგორია",
         links: ["მილები", "საკანალიზაციო მილები", "ონკანები", "სამზარეულოს ონკანები"]
     },
-
-
     {
         id: 2,
         title: 'ელექტროობა',
         image: IMG2,
         description: "ელექტროობის კატეგორია",
         links: ["კაბელი", "ელექტრო-სამონტაჟო აქსესუარები", "ხელსაწყოები", "ჩამრთველები"]
-    },
-
-    {
-        id: 1,
-        title: 'სანტექნიკა',
-        image: IMG1,
-        description: "ეს არის სანტექნიკის კატეგორია",
-        links: ["მილები", "საკანალიზაციო მილები", "ონკანები", "სამზარეულოს ონკანები"]
-    },
-
-    {
-        id: 2,
-        title: 'ელექტროობა',
-        image: IMG2,
-        description: "ელექტროობის კატეგორია",
-        links: ["კაბელი", "ელექტრო-სამონტაჟო აქსესუარები", "ხელსაწყოები", "ჩამრთველები"]
-    },
-
-    {
-        id: 1,
-        title: 'სანტექნიკა',
-        image: IMG1,
-        description: "ეს არის სანტექნიკის კატეგორია",
-        links: ["მილები", "საკანალიზაციო მილები", "ონკანები", "სამზარეულოს ონკანები"]
-    },
+    }
 ];
 
 const Categories = () => {
     const { register, handleSubmit, setValue, formState: { errors } } = useForm();
+    const [categories, setCategories] = useState(initialCategories);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -103,6 +77,7 @@ const Categories = () => {
         setSelectedCategory(category);
         setValue("name", category.title);
         setValue("desc", category.description);
+        setImage(category.image); // Set initial image
         setIsEditModalOpen(true);
     };
 
@@ -112,17 +87,37 @@ const Categories = () => {
     };
 
     const handleSaveCategory = (data) => {
-        console.log('Category Saved:', { ...data, image });
-        setIsModalOpen(false); // Close the modal after saving
+        if (isEditModalOpen) {
+            // Update the existing category
+            setCategories((prevCategories) =>
+                prevCategories.map((cat) =>
+                    cat.id === selectedCategory.id
+                        ? { ...cat, title: data.name, description: data.desc, image: image || cat.image }
+                        : cat
+                )
+            );
+            setIsEditModalOpen(false);
+        } else {
+            // Add a new category
+            const newCategory = {
+                id: categories.length + 1,
+                title: data.name,
+                description: data.desc,
+                image: image || IMG1 // Default image if no image is uploaded
+            };
+            setCategories([...categories, newCategory]);
+            setIsModalOpen(false);
+        }
+        setImage(null); // Reset image after saving
     };
 
     const handleDeleteConfirm = () => {
-        console.log('Category Deleted:', selectedCategory);
-        setIsDeleteModalOpen(false); // Close delete confirmation modal
+        setCategories(categories.filter((cat) => cat.id !== selectedCategory.id));
+        setIsDeleteModalOpen(false);
     };
 
     return (
-        <div className="w-full mx-auto p-4 bg-gray-100">
+        <div className="w-full mx-auto p-4 bg-gray-100 h-screen">
             <h1 className="text-2xl text-center">კატეგორიები</h1>
 
             <div className="w-[100%] flex justify-end">
@@ -134,7 +129,7 @@ const Categories = () => {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3 mt-5 justify-center ">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3 mt-5 ">
                 {categories.map(category => (
                     <div
                         key={category.id}
@@ -142,35 +137,38 @@ const Categories = () => {
                     >
                         <div className="absolute top-2 right-2 flex gap-2">
                             <p
-                                className="w-6 h-6 text-blue-500 cursor-pointer"
+                                className="w-6 h-6 text-blue-500 cursor-pointer m-1"
                                 onClick={() => handleEditCategory(category)}
-                            >aa</p>
+                            ><FaPencilAlt/></p>
                             <p
-                                className="w-6 h-6 text-red-500 cursor-pointer"
+                                className="w-6 h-6 text-red-500 cursor-pointer m-1"
                                 onClick={() => handleDeleteCategory(category)}
-                            >DD</p>
+                            ><FaTrash/></p>
                         </div>
-                        <h2 className="text-xl text-center mb-4">{category.title}</h2>
+                        <h2 className="text-xl text-center mb-2">{category.title}</h2>
                         <img
                             src={category.image}
                             alt={`Image for ${category.title}`}
                             className="w-[180px] aspect-square mx-auto mb-4 object-cover"
                         />
-                        <Link
-                            to={`/Categories/${category.title}`}
-                            className="absolute bottom-4 rounded-lg right-4 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700"
-                        >
-                            სუბ. კატეგორიები
-                        </Link>
+
+                        <div className='w-full flex justify-end '>
+                            <Link
+                                to={`/Categories/${category.title}`}
+                                className="rounded-lg px-4 py-2 bg-blue-600 text-white hover:bg-blue-700"
+                            >
+                                სუბ. კატეგორიები
+                            </Link>
+                        </div>
                     </div>
                 ))}
             </div>
 
-            {/* Modal for adding category */}
-            {isModalOpen && (
+            {/* Modal for adding/editing category */}
+            {(isModalOpen || isEditModalOpen) && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-[500px]">
-                        <h2 className="text-xl mb-4">კატეგორიის დამატება</h2>
+                        <h2 className="text-xl mb-4">{isEditModalOpen ? "კატეგორიის რედაქტირება" : "კატეგორიის დამატება"}</h2>
 
                         {/* Image upload */}
                         <div
@@ -201,62 +199,7 @@ const Categories = () => {
                             />
                             <div className="flex justify-between">
                                 <button
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="bg-gray-300 text-black p-2 rounded"
-                                    type="button"
-                                >
-                                    დახურვა
-                                </button>
-                                <button
-                                    className="bg-blue-600 text-white p-2 rounded"
-                                    type="submit"
-                                >
-                                    შენახვა
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* Edit Modal */}
-            {isEditModalOpen && selectedCategory && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-[500px]">
-                        <h2 className="text-xl mb-4">კატეგორიის რედაქტირება</h2>
-
-                        {/* Image upload */}
-                        <div
-                            {...getRootProps()}
-                            className="border-2 border-dashed p-4 mb-4 text-center cursor-pointer"
-                        >
-                            <input {...getInputProps()} />
-                            {image ? (
-                                <img src={image} alt="Uploaded" className="mx-auto w-40 h-40 mb-4" />
-                            ) : (
-                                <p>დაწექით რათა ატვირთოთ სურათი</p>
-                            )}
-                        </div>
-
-                        {/* Edit Category Name and Description */}
-                        <form onSubmit={handleSubmit(handleSaveCategory)}>
-                            <input
-                                {...register("name", { required: true })}
-                                type="text"
-                                placeholder="კატეგორიის სახელი"
-                                className="w-full p-2 mb-4 border border-gray-300 rounded"
-                                defaultValue={selectedCategory.title}
-                            />
-                            <input
-                                {...register("desc", { required: true })}
-                                type="text"
-                                placeholder="აღწერე კატეგორია"
-                                className="w-full p-2 mb-4 border border-gray-300 rounded"
-                                defaultValue={selectedCategory.description}
-                            />
-                            <div className="flex justify-between">
-                                <button
-                                    onClick={() => setIsEditModalOpen(false)}
+                                    onClick={() => (isEditModalOpen ? setIsEditModalOpen(false) : setIsModalOpen(false))}
                                     className="bg-gray-300 text-black p-2 rounded"
                                     type="button"
                                 >
