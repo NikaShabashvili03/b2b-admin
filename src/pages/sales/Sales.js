@@ -53,7 +53,8 @@ const categories = [
 
 export default function Sales() {
     const [selectedProducts, setSelectedProducts] = useState([]);
-    const [productSales, setProductSales] = useState([]);  // New state for sale percentages
+    const [productSales, setProductSales] = useState([]);
+    const [emptyDiscounts, setEmptyDiscounts] = useState([]);
 
     const handleCategoryChange = (category) => {
         const allProductsInCategory = category.subcategories.flatMap(sub => sub.products);
@@ -61,19 +62,34 @@ export default function Sales() {
 
         setSelectedProducts(prev =>
             isCategorySelected
-                ? prev.filter(p => !allProductsInCategory.some(product => product.id === p.id)) // Deselect all in category
-                : [...prev, ...allProductsInCategory.filter(product => !prev.some(p => p.id === product.id))] // Select all in category
+                ? prev.filter(p => !allProductsInCategory.some(product => product.id === p.id))
+                : [...prev, ...allProductsInCategory.filter(product => !prev.some(p => p.id === product.id))]
+        );
+
+        setProductSales(prev =>
+            isCategorySelected
+                ? prev.filter(sale => !allProductsInCategory.some(product => product.id === sale.product)) // Remove sales for deselected products
+                : prev 
         );
     };
 
     const handleSubcategoryChange = (subcategory) => {
-        const isSubcategorySelected = subcategory.products.every(product => selectedProducts.some(p => p.id === product.id));
-
+        const isSubcategorySelected = subcategory.products.every(product => 
+            selectedProducts.some(p => p.id === product.id)
+        );
+    
+        // Update selectedProducts to add or remove subcategory products
         setSelectedProducts(prev =>
             isSubcategorySelected
-                ? prev.filter(p => !subcategory.products.some(product => product.id === p.id)) // Deselect all in subcategory
-                : [...prev, ...subcategory.products.filter(product => !prev.some(p => p.id === product.id))] // Select all in subcategory
+                ? prev.filter(p => !subcategory.products.some(product => product.id === p.id)) 
+                : [...prev, ...subcategory.products.filter(product => !prev.some(p => p.id === product.id))]
         );
+    
+        setProductSales(prev => 
+            !isSubcategorySelected
+                ? prev 
+                : prev.filter(sale => !subcategory.products.some(product => product.id === sale.product)) // If deselected, remove products in this subcategory
+        );        
     };
 
     const handleProductChange = (product) => {
@@ -90,19 +106,37 @@ export default function Sales() {
         }
     };
 
-    const handleSaleChange = (productId, saleValue) => {
+    const handleSaleChange = (productId, saleValue, title) => {
+        const validSaleValue = Math.max(1, Math.min(100, Number(saleValue)));
+        
         setProductSales(prev => {
             if (saleValue === "") {
                 return prev.filter(p => p.product !== productId);
             }
-         
+
             const existingSale = prev.find(p => p.product === productId);
             if (existingSale) {
-                return prev.map(p => p.product === productId ? { ...p, sale: saleValue } : p);
+                return prev.map(p => 
+                    p.product === productId ? { ...p, discount: validSaleValue, title: title } : p
+                );
             } else {
-                return [...prev, { product: productId, sale: saleValue }];
+                return [...prev, { product: productId, discount: validSaleValue, title: title }];
             }
         });
+
+        setEmptyDiscounts(prev => prev.filter(id => id !== productId));
+    };
+
+    const handleSubmit = () => {
+        const emptyDiscounts = selectedProducts
+            .filter(product => !productSales.some(p => p.product === product.id))
+            .map(product => product.id);
+
+        setEmptyDiscounts(emptyDiscounts);
+
+        if (emptyDiscounts.length === 0) {
+            console.log(productSales);
+        }
     };
 
     return (
@@ -142,10 +176,14 @@ export default function Sales() {
                                         {selectedProducts.some(p => p.id === product.id) && (
                                             <input
                                                 type="number"
-                                                value={productSales.find(p => p.product === product.id)?.sale || ""}
-                                                onChange={(e) => handleSaleChange(product.id, e.target.value)}
+                                                min="1"
+                                                max="100"
+                                                value={productSales.find(p => p.product === product.id)?.discount || ""}
+                                                onChange={(e) => handleSaleChange(product.id, e.target.value, product.title)}
                                                 placeholder="%"
-                                                className="w-16 px-2 py-1 text-center border rounded-md"
+                                                className={`w-16 px-2 py-1 text-center border rounded-md ${
+                                                    emptyDiscounts.includes(product.id) ? 'border-red-500' : ''
+                                                }`}
                                             />
                                         )}
                                     </li>
@@ -156,9 +194,20 @@ export default function Sales() {
                 </div>
             ))}
 
-
+            <div>
+                <h2>Selected Products</h2>
+                {productSales.map((product, i) => (
+                    <div key={i}> 
+                        <h2>{product.title} | {product.discount}%</h2>
+                    </div>
+                ))}
+            </div>
+            
             <div className='w-full h-full flex justify-end px-4 items-center'>
-                <button className="px-4 py-2 bg-green-600 rounded-md text-white" onClick={() => console.log(productSales)}>
+                <button 
+                    className="px-4 py-2 bg-green-600 rounded-md text-white" 
+                    onClick={handleSubmit}
+                >
                     Submit
                 </button>
             </div>
