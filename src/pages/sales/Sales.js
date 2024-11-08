@@ -1,152 +1,167 @@
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form';
-
+import { useState } from 'react';
 
 const categories = [
     {
         id: 321,
         title: 'სანტექნიკა',
-        image: "",
-        description: "ეს არის სანტექნიკის კატეგორია",
         subcategories: [
             {
                 id: 1,
                 title: "მილები",
+                products: [
+                    { id: 128, title: "სამსუნგ G1" },
+                    { id: 122, title: "სამსუნგ G3" }
+                ]
             },
             {
                 id: 2,
-                title: "საკანალიზაციო მილები"
+                title: "საკანალიზაციო მილები",
+                products: [
+                    { id: 124, title: "სამსუნგ G3" }
+                ]
             },
             {
                 id: 3,
-                title: "ონკანები"
+                title: "ონკანები",
+                products: [
+                    { id: 120, title: "სამსუნგ G4" }
+                ]
             },
-            {
-                id: 4,
-                title: "სამზარეულოს ონკანები"
-            }
         ]
     },
     {
         id: 123,
         title: 'ელექტროობა',
-        image: "",
-        description: "ელექტროობის კატეგორია",
         subcategories: [
             {
                 id: 5,
                 title: "კაბელი",
+                products: [
+                    { id: 131, title: "აიფონ 16" }
+                ]
             },
             {
                 id: 6,
                 title: "ელექტრო-სამონტაჟო აქსესუარები",
+                products: [
+                    { id: 132, title: "აიფონ 15" }
+                ]
             },
-            {
-                id: 7,
-                title: "ხელსაწყოები",
-            },
-            {
-                id: 8,
-                title: "ჩამრთველები"
-            }
         ]
     },
 ];
 
 export default function Sales() {
-  const [sales, setSales] = useState([
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [productSales, setProductSales] = useState([]);  // New state for sale percentages
 
-  ]);
+    const handleCategoryChange = (category) => {
+        const allProductsInCategory = category.subcategories.flatMap(sub => sub.products);
+        const isCategorySelected = allProductsInCategory.every(product => selectedProducts.some(p => p.id === product.id));
 
-  const [checkedCategories, setCheckedCategories] = useState(
-        categories.map((category) => ({
-            id: category.id,
-            checked: false,
-            subcategories: category.subcategories.map((subcategory) => ({
-                id: subcategory.id,
-                checked: false,
-            })),
-        }))
-    );
-
-    const handleCategoryChange = (categoryIndex) => {
-            const updatedCategories = [...checkedCategories];
-            const category = updatedCategories[categoryIndex];
-            category.checked = !category.checked;
-            category.subcategories = category.subcategories.map((sub) => ({
-                ...sub,
-                checked: category.checked,
-            }));
-        
-            setCheckedCategories(updatedCategories);
+        setSelectedProducts(prev =>
+            isCategorySelected
+                ? prev.filter(p => !allProductsInCategory.some(product => product.id === p.id)) // Deselect all in category
+                : [...prev, ...allProductsInCategory.filter(product => !prev.some(p => p.id === product.id))] // Select all in category
+        );
     };
 
-    const handleSubcategoryChange = (categoryIndex, subcategoryIndex) => {
-        const updatedCategories = [...checkedCategories];
-        updatedCategories[categoryIndex].subcategories[subcategoryIndex].checked =
-            !updatedCategories[categoryIndex].subcategories[subcategoryIndex].checked;
+    const handleSubcategoryChange = (subcategory) => {
+        const isSubcategorySelected = subcategory.products.every(product => selectedProducts.some(p => p.id === product.id));
 
-        const allSubcategoriesChecked = updatedCategories[categoryIndex].subcategories.every(
-            (sub) => sub.checked
+        setSelectedProducts(prev =>
+            isSubcategorySelected
+                ? prev.filter(p => !subcategory.products.some(product => product.id === p.id)) // Deselect all in subcategory
+                : [...prev, ...subcategory.products.filter(product => !prev.some(p => p.id === product.id))] // Select all in subcategory
         );
-        updatedCategories[categoryIndex].checked = allSubcategoriesChecked;
+    };
 
-        setCheckedCategories(updatedCategories);
-  };
+    const handleProductChange = (product) => {
+        const isSelected = selectedProducts.some(p => p.id === product.id);
 
-  
-  return (
-    <div className='px-8 py-10 flex flex-col gap-10'>
-        {categories.map((category, i) => (
-            <div key={category.id}>
-                <div className='flex justify-start items-center gap-2 mb-4'>
-                    <input
-                        id={category.id}
-                        type="checkbox"
-                        checked={checkedCategories[i].checked}
-                        onChange={() => handleCategoryChange(i)}
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                    />
-                    <label htmlFor={category.id} className="font-semibold text-gray-900 dark:text-white">
-                        {category.title}
-                    </label>
-                </div>
-                <ul className="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    {category.subcategories.map((subcategory, j) => (
-                        <li key={subcategory.id} className="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                            <div className="flex items-center px-3">
+        setSelectedProducts(prev =>
+            isSelected
+                ? prev.filter(p => p.id !== product.id)
+                : [...prev, product] 
+        );
+
+        if (isSelected) {
+            setProductSales(prev => prev.filter(p => p.product !== product.id));
+        }
+    };
+
+    const handleSaleChange = (productId, saleValue) => {
+        setProductSales(prev => {
+            if (saleValue === "") {
+                return prev.filter(p => p.product !== productId);
+            }
+         
+            const existingSale = prev.find(p => p.product === productId);
+            if (existingSale) {
+                return prev.map(p => p.product === productId ? { ...p, sale: saleValue } : p);
+            } else {
+                return [...prev, { product: productId, sale: saleValue }];
+            }
+        });
+    };
+
+    return (
+        <div className='px-8 py-10 flex flex-col gap-10'>
+            {categories.map((category) => (
+                <div key={category.id}>
+                    <div className='flex justify-start items-center gap-2 mb-4'>
+                        <input
+                            type="checkbox"
+                            checked={category.subcategories.every(sub => sub.products.every(product => selectedProducts.some(p => p.id === product.id)))}
+                            onChange={() => handleCategoryChange(category)}
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <label className="font-semibold text-gray-900">{category.title}</label>
+                    </div>
+                    {category.subcategories.map((subcategory) => (
+                        <div key={subcategory.id} className="ml-6">
+                            <div className="flex items-center gap-2 mb-2">
                                 <input
-                                    id={subcategory.id}
                                     type="checkbox"
-                                    checked={checkedCategories[i].subcategories[j].checked}
-                                    onChange={() => {
-                                        handleSubcategoryChange(i, j)
-                                        if(checkedCategories[i].subcategories[j].checked){
-                                            setSales((prev) => [...prev, { id: subcategory.id, sale: 0 }])
-                                        }else{
-                                            setSales((prev) => prev.filter((sub) => sub.id !== subcategory.id))
-                                        }
-                                    }}
-                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                                    checked={subcategory.products.every(product => selectedProducts.some(p => p.id === product.id))}
+                                    onChange={() => handleSubcategoryChange(subcategory)}
+                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                                 />
-                                <label htmlFor={subcategory.id} className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                    {subcategory.title}
-                                </label>
-                                {checkedCategories[i].subcategories[j].checked && (
-                                    <input type='number' value={0} className='h-full bg-gray-300 text-black rounded-md px-4 py-2' placeholder='%'/>
-                                )}
+                                <label className="text-gray-700">{subcategory.title}</label>
                             </div>
-                        </li>
+                            <ul className="ml-6">
+                                {subcategory.products.map((product) => (
+                                    <li key={product.id} className="flex items-center gap-2 mb-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedProducts.some(p => p.id === product.id)}
+                                            onChange={() => handleProductChange(product)}
+                                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                        />
+                                        <label className="text-gray-600">{product.title}</label>
+                                        {selectedProducts.some(p => p.id === product.id) && (
+                                            <input
+                                                type="number"
+                                                value={productSales.find(p => p.product === product.id)?.sale || ""}
+                                                onChange={(e) => handleSaleChange(product.id, e.target.value)}
+                                                placeholder="%"
+                                                className="w-16 px-2 py-1 text-center border rounded-md"
+                                            />
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     ))}
-                </ul>
-            </div>
-        ))}
-        <div className='w-full h-full flex justify-end px-4 items-center'>
-            <button className="px-4 py-2 bg-green-600 rounded-md text-white">
-                Submit
-            </button>
+                </div>
+            ))}
 
+
+            <div className='w-full h-full flex justify-end px-4 items-center'>
+                <button className="px-4 py-2 bg-green-600 rounded-md text-white" onClick={() => console.log(productSales)}>
+                    Submit
+                </button>
+            </div>
         </div>
-    </div>
-  )
+    );
 }
