@@ -68,7 +68,7 @@ export default function Sales() {
 
         setProductSales(prev =>
             isCategorySelected
-                ? prev.filter(sale => !allProductsInCategory.some(product => product.id === sale.product)) // Remove sales for deselected products
+                ? prev.filter(sale => !allProductsInCategory.some(product => product.id === sale.product)) 
                 : prev 
         );
     };
@@ -78,7 +78,6 @@ export default function Sales() {
             selectedProducts.some(p => p.id === product.id)
         );
     
-        // Update selectedProducts to add or remove subcategory products
         setSelectedProducts(prev =>
             isSubcategorySelected
                 ? prev.filter(p => !subcategory.products.some(product => product.id === p.id)) 
@@ -88,7 +87,7 @@ export default function Sales() {
         setProductSales(prev => 
             !isSubcategorySelected
                 ? prev 
-                : prev.filter(sale => !subcategory.products.some(product => product.id === sale.product)) // If deselected, remove products in this subcategory
+                : prev.filter(sale => !subcategory.products.some(product => product.id === sale.product)) 
         );        
     };
 
