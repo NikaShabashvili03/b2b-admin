@@ -6,7 +6,9 @@ import SubCategories from './pages/subcategories/SubCategories'
 import Products from "./pages/products/Products";
 import Home from "./pages/home/Home";
 import Customers from "./pages/customers/Customers";
-import Sales from "./pages/sales/Sales";
+import Sales from "./pages/SalesCategories/SalesCategories";
+import Profile from "./pages/profile/Profile";
+
 
 function App() {
   return (
@@ -19,6 +21,7 @@ function App() {
           <Route path="/categories/:categoryId/:subcategoryId" element={<Products/>}/>
           <Route path="/customers" element={<Customers/>}/>
           <Route path="/sales" element={<Sales/>}/>
+          <Route path="/profile" element={<Profile/>}/>
         </Route>
     </Routes>
   );
