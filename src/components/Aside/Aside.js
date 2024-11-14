@@ -20,7 +20,7 @@ export default function Aside() {
                         setOpen(!open)
                     }}>X</button>
                 </div>
-                <div className="flex flex-col items-center gap-2 p-4">
+                <div className="flex flex-col items-center gap-4 p-4">
                     <div className="text-5xl font-bold text-[#b7c2ff] cursor-default">Logo</div>
                     <div className="w-24 h-24 p-5 rounded-full border-4 border-gray-400 transition duration-200 hover:border-gray-700 hover:opacity-90"></div>
                     <div className="text-center text-xl text-black font-sans">John Doe</div>
@@ -39,11 +39,26 @@ export default function Aside() {
                         Categories
                     </Link>
                     <Link
+<<<<<<< HEAD
                         to="/invoice"
                         className="cursor-pointer w-full py-2 text-center transition duration-200 hover:bg-gray-100 focus:bg-[#d1d7ff] focus:outline focus:outline-gray-700 rounded focus:text-white active:bg-[#b7c2ff] active:text-white"
                         >
                         Invoices
                     </Link>
+=======
+                        to="/sales"
+                        className="cursor-pointer w-full py-2 text-center transition duration-200 hover:bg-gray-100 focus:bg-[#d1d7ff] focus:outline focus:outline-gray-700 rounded focus:text-white active:bg-[#b7c2ff] active:text-white"
+                        >
+                        Sales
+                    </Link>
+                    <Link
+                        to="/profile"
+                        className="cursor-pointer w-full py-2 text-center transition duration-200 hover:bg-gray-100 focus:bg-[#d1d7ff] focus:outline focus:outline-gray-700 rounded focus:text-white active:bg-[#b7c2ff] active:text-white"
+                        >
+                        Profiles
+                    </Link>
+
+>>>>>>> 6ac9415d12c9ba51b39f335ee08170754be11277
                 </div>
                 </div>
             </div>
