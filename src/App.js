@@ -7,7 +7,7 @@ import Products from "./pages/products/Products";
 import Home from "./pages/home/Home";
 import Customers from "./pages/customers/Customers";
 import Sales from "./pages/sales/Sales";
-
+import Invoice from "./pages/invoice/Invoice";
 function App() {
   return (
     <Routes>
@@ -19,6 +19,7 @@ function App() {
           <Route path="/categories/:categoryId/:subcategoryId" element={<Products/>}/>
           <Route path="/customers" element={<Customers/>}/>
           <Route path="/sales" element={<Sales/>}/>
+          <Route path="/invoice" element={<Invoice/>}/>
         </Route>
     </Routes>
   );

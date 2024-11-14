@@ -38,6 +38,12 @@ export default function Aside() {
                         >
                         Categories
                     </Link>
+                    <Link
+                        to="/invoice"
+                        className="cursor-pointer w-full py-2 text-center transition duration-200 hover:bg-gray-100 focus:bg-[#d1d7ff] focus:outline focus:outline-gray-700 rounded focus:text-white active:bg-[#b7c2ff] active:text-white"
+                        >
+                        Invoices
+                    </Link>
                 </div>
                 </div>
             </div>
