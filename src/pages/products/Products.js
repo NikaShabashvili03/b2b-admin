@@ -200,6 +200,16 @@ const Products = () => {
                       className="mt-1"
                     />
                   </div>
+                  <div className="w-full justify-end flex">
+              </div>
+                <h2>მახასიათებლები</h2>
+                <div className="w-full overflow-y-auto max-h-[500px] my-2 gap-2 flex flex-col py-2">
+                  <div className="flex gap-2">
+                    <h2 className="px-2 border rounded-full">GPU</h2>
+                    <input className="w-full px-2 border rounded-full"/>
+                  </div>
+                  
+                </div>
 
                   <button
                     type="submit"

@@ -67,7 +67,7 @@ const categories = [
         title: 'ელექტროობა',
         image: "https://www.shutterstock.com/image-vector/realistic-black-modern-thin-frame-260nw-2260871101.jpg",
         description: "ელექტროობის კატეგორია",
-        links: ["კაბელი", "ელექტრო-სამონტაჟო აქსესუარები", "ხელსაწყოები", "ჩამრთველები"]
+        links: ["კაბელი", "ელექტრო-სამონტაჟო აქსესუარები", "ხელსაწყოები", "ჩამრთველები"],
     },
 
     {
@@ -114,6 +114,10 @@ const SubCategories = () => {
     console.log("Category Deleted:", selectedCategory);
     setIsDeleteModalOpen(false);
   };
+
+  const onsave = (data) => {
+    console.log(data)
+  }
 
   return (
     <div className="w-full mx-auto p-4 bg-gray-100">
@@ -201,6 +205,35 @@ const SubCategories = () => {
                 placeholder="აღწერე კატეგორია"
                 className="w-full p-2 mb-4 border border-gray-300 rounded"
               />
+              <div className="w-full justify-end flex">
+                <button className="px-2 py-1 bg-blue-600 rounded-2xl text-white self-end">დამატებითი ინფორმაცია</button>
+              </div>
+              <div className="w-full overflow-y-auto max-h-[500px] my-2 gap-2 flex flex-col py-2">
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                <input className="w-full px-2 border rounded-full"/>
+                
+              </div>
 
               <div className="flex justify-between">
                 <button
