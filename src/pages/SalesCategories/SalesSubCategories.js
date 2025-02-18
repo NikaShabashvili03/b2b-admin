@@ -164,7 +164,7 @@ const SalesSubCategories = () => {
 
             <div className="w-full flex justify-center">
               <Link
-                to={`/Categories/${CategoryId}/${category.title}`}
+                to={`/Sales/SubCategories${CategoryId}/${category.title}`}
                 className="rounded-lg px-4 py-2 bg-blue-600 text-white hover:bg-blue-700"
               >
                 პროდუქტები

@@ -170,7 +170,7 @@ const Categories = () => {
 
                         <div className="w-full flex justify-center">
                             <Link
-                                to={`/Sales/${category.title}`}
+                                to={`/Customers/${category.title}`}
                                 className="rounded-lg px-4 py-2 bg-blue-600 text-white hover:bg-blue-700"
                             >
                                 სუბ. კატეგორიები
