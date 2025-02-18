@@ -11,6 +11,9 @@ import Profile from "./pages/profile/Profile";
 import SalesSubCategories from "./pages/SalesCategories/SalesSubCategories";
 import SalesProducts from "./pages/SalesCategories/SalesProducts";
 import Invoice from "./pages/invoice/Invoice";
+import CustomersCategoriesActions from "./pages/customers/CustomersCategoriesActions"
+import CustomersProductsActions from "./pages/customers/CustomersProductsActions"
+import CustomersSubCategoriesActions from "./pages/customers/CustomersSubCategoriesActions"
 
 
 function App() {
@@ -23,6 +26,9 @@ function App() {
           <Route path="/categories/:categoryId" element={<SubCategories/>}/>
           <Route path="/categories/:categoryId/:subcategoryId" element={<Products/>}/>
           <Route path="/customers" element={<Customers/>}/>
+          <Route path="/customers/customersact" element={<CustomersCategoriesActions/>}/>
+          <Route path="/customers/customersact/:customersactId" element={<CustomersSubCategoriesActions/>}/>
+          <Route path="/customers/customersact/:customersactId/:subcategoryId" element={<CustomersProductsActions/>}/>
           <Route path="/sales" element={<Sales/>}/>
           <Route path="/sales/:salesId" element={<SalesSubCategories/>}/>
           <Route path="/sales/:salesId/:subcategoryId" element={<SalesProducts/>}/>

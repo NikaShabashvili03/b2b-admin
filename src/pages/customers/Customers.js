@@ -51,7 +51,7 @@ function Customers() {
                         <p class="whitespace-no-wrap">Sep 28, 2022</p>
                     </td>
                     <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                        <Link to={`/CustomersCategoriesActions/`} class="rounded-md bg-green-200 px-3 py-1 text-xs font-semibold text-green-900">Sales</Link>
+                        <Link to={`/customers/customersact`} class="rounded-md bg-green-200 px-3 py-1 text-xs font-semibold text-green-900">Sales</Link>
                     </td>
                 </tr>
                 </tbody>
