@@ -1,66 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import IMG1 from "../../assets/kluchi.png";
 import IMG2 from "../../assets/dencq.png";
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { FaTrash, FaPencilAlt } from 'react-icons/fa';
-
-const initialCategories = [
-    {
-        id: 1,
-        title: 'სანტექნიკა',
-        image: IMG1,
-        description: "ეს არის სანტექნიკის კატეგორია",
-        links: ["მილები", "საკანალიზაციო მილები", "ონკანები", "სამზარეულოს ონკანები"]
-    },
-    {
-        id: 2,
-        title: 'ელექტროობა',
-        image: IMG2,
-        description: "ელექტროობის კატეგორია",
-        links: ["კაბელი", "ელექტრო-სამონტაჟო აქსესუარები", "ხელსაწყოები", "ჩამრთველები"]
-    },
-
-    {
-        id: 1,
-        title: 'სანტექნიკა',
-        image: IMG1,
-        description: "ეს არის სანტექნიკის კატეგორია",
-        links: ["მილები", "საკანალიზაციო მილები", "ონკანები", "სამზარეულოს ონკანები"]
-    },
-    {
-        id: 2,
-        title: 'ელექტროობა',
-        image: IMG2,
-        description: "ელექტროობის კატეგორია",
-        links: ["კაბელი", "ელექტრო-სამონტაჟო აქსესუარები", "ხელსაწყოები", "ჩამრთველები"]
-    },
-
-    {
-        id: 1,
-        title: 'სანტექნიკა',
-        image: IMG1,
-        description: "ეს არის სანტექნიკის კატეგორია",
-        links: ["მილები", "საკანალიზაციო მილები", "ონკანები", "სამზარეულოს ონკანები"]
-    },
-    {
-        id: 2,
-        title: 'ელექტროობა',
-        image: IMG2,
-        description: "ელექტროობის კატეგორია",
-        links: ["კაბელი", "ელექტრო-სამონტაჟო აქსესუარები", "ხელსაწყოები", "ჩამრთველები"]
-    }
-];
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCategories, addCategory, updateCategory, removeCategory } from '../../redux/slices/categorySlice';
 
 const Categories = () => {
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm();
-    const [categories, setCategories] = useState(initialCategories);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
+    const dispatch = useDispatch();
+    const categories = useSelector((state) => state.category.data);
+    const status = useSelector((state) => state.category.status);
+
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [image, setImage] = useState(null);
+
+    useEffect(() => {
+        if (status === 'idle') {
+            dispatch(fetchCategories());
+        }
+    }, [status, dispatch]);
 
     const { getRootProps, getInputProps } = useDropzone({
         onDrop: (acceptedFiles) => {
@@ -70,14 +34,15 @@ const Categories = () => {
     });
 
     const handleAddCategory = () => {
-        setIsModalOpen(true);
+        reset()
+        setSelectedCategory(null);
+        setIsCreateModalOpen(true);
     };
 
     const handleEditCategory = (category) => {
         setSelectedCategory(category);
-        setValue("name", category.title);
-        setValue("desc", category.description);
-        setImage(category.image); // Set initial image
+        setValue("name", category.name);
+        setValue("desc", category.description); 
         setIsEditModalOpen(true);
     };
 
@@ -88,31 +53,21 @@ const Categories = () => {
 
     const handleSaveCategory = (data) => {
         if (isEditModalOpen) {
-            // Update the existing category
-            setCategories((prevCategories) =>
-                prevCategories.map((cat) =>
-                    cat.id === selectedCategory.id
-                        ? { ...cat, title: data.name, description: data.desc, image: image || cat.image }
-                        : cat
-                )
-            );
+            dispatch(updateCategory({ id: selectedCategory._id, data: { name: data.name, description: data.desc } }));
             setIsEditModalOpen(false);
         } else {
-            // Add a new category
             const newCategory = {
-                id: categories.length + 1,
-                title: data.name,
+                name: data.name,
                 description: data.desc,
-                image: image || IMG1 // Default image if no image is uploaded
             };
-            setCategories([...categories, newCategory]);
-            setIsModalOpen(false);
+            dispatch(addCategory(newCategory));
+            setIsCreateModalOpen(false);
         }
-        setImage(null); // Reset image after saving
+        setImage(null); 
     };
 
     const handleDeleteConfirm = () => {
-        setCategories(categories.filter((cat) => cat.id !== selectedCategory.id));
+        dispatch(removeCategory(selectedCategory._id));
         setIsDeleteModalOpen(false);
     };
 
@@ -132,8 +87,8 @@ const Categories = () => {
             <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3 mt-5 ">
                 {categories.map(category => (
                     <div
-                        key={category.id}
-                        className="relative bg-white rounded-lg shadow-md p-6 w-full h-[300px] mx-auto transition-transform transform hover:scale-105 hover:shadow-lg m"
+                        key={category._id}
+                        className="relative bg-white rounded-lg shadow-md p-6 w-full min-h-[350px] mx-auto transition-transform transform hover:scale-105 hover:shadow-lg m"
                     >
                         <div className="absolute top-2 right-2 flex gap-2">
                             <p
@@ -145,16 +100,17 @@ const Categories = () => {
                                 onClick={() => handleDeleteCategory(category)}
                             ><FaTrash/></p>
                         </div>
-                        <h2 className="text-xl text-center mb-2">{category.title}</h2>
+                        <h2 className="text-xl text-center mb-2">{category.name}</h2>
+                        <p>{category.description}</p>
                         <img
                             src={category.image}
-                            alt={`Image for ${category.title}`}
+                            alt={`Image for ${category.name}`}
                             className="w-[180px] aspect-square mx-auto mb-4 object-cover"
                         />
 
                         <div className='w-full flex justify-end '>
                             <Link
-                                to={`/Categories/${category.title}`}
+                                to={`/categories/${category._id}`}
                                 className="rounded-lg px-4 py-2 bg-blue-600 text-white hover:bg-blue-700"
                             >
                                 სუბ. კატეგორიები
@@ -164,11 +120,11 @@ const Categories = () => {
                 ))}
             </div>
 
-            {/* Modal for adding/editing category */}
-            {(isModalOpen || isEditModalOpen) && (
+            {/* Modal for adding category */}
+            {isCreateModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-[500px]">
-                        <h2 className="text-xl mb-4">{isEditModalOpen ? "კატეგორიის რედაქტირება" : "კატეგორიის დამატება"}</h2>
+                        <h2 className="text-xl mb-4">კატეგორიის დამატება</h2>
 
                         {/* Image upload */}
                         <div
@@ -199,7 +155,60 @@ const Categories = () => {
                             />
                             <div className="flex justify-between">
                                 <button
-                                    onClick={() => (isEditModalOpen ? setIsEditModalOpen(false) : setIsModalOpen(false))}
+                                    onClick={() => setIsCreateModalOpen(false)}
+                                    className="bg-gray-300 text-black p-2 rounded"
+                                    type="button"
+                                >
+                                    დახურვა
+                                </button>
+                                <button
+                                    className="bg-blue-600 text-white p-2 rounded"
+                                    type="submit"
+                                >
+                                    შენახვა
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal for editing category */}
+            {isEditModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[500px]">
+                        <h2 className="text-xl mb-4">კატეგორიის რედაქტირება</h2>
+
+                        {/* Image upload */}
+                        <div
+                            {...getRootProps()}
+                            className="border-2 border-dashed p-4 mb-4 text-center cursor-pointer"
+                        >
+                            <input {...getInputProps()} />
+                            {image ? (
+                                <img src={image} alt="Uploaded" className="mx-auto w-40 h-40 mb-4" />
+                            ) : (
+                                <p>დაწექით რათა ატვირთოთ სურათი</p>
+                            )}
+                        </div>
+
+                        {/* Category Name and Description */}
+                        <form onSubmit={handleSubmit(handleSaveCategory)}>
+                            <input
+                                {...register("name", { required: true })}
+                                type="text"
+                                placeholder="კატეგორიის სახელი"
+                                className="w-full p-2 mb-4 border border-gray-300 rounded"
+                            />
+                            <input
+                                {...register("desc", { required: true })}
+                                type="text"
+                                placeholder="აღწერე კატეგორია"
+                                className="w-full p-2 mb-4 border border-gray-300 rounded"
+                            />
+                            <div className="flex justify-between">
+                                <button
+                                    onClick={() => setIsEditModalOpen(false)}
                                     className="bg-gray-300 text-black p-2 rounded"
                                     type="button"
                                 >

@@ -1,9 +1,12 @@
 import clsx from 'clsx'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 
 export default function Aside() {
   const [open, setOpen] = useState(false)
+  const { admin } = useAuth()
+
   return (
     <>
         <button onClick={() => setOpen(!open)} className='fixed z-50 left-5 top-2 lg:hidden'>
@@ -23,7 +26,7 @@ export default function Aside() {
                 <div className="flex flex-col items-center gap-4 p-4">
                     <div className="text-5xl font-bold text-[#b7c2ff] cursor-default">Logo</div>
                     <div className="w-24 h-24 p-5 rounded-full border-4 border-gray-400 transition duration-200 hover:border-gray-700 hover:opacity-90"></div>
-                    <div className="text-center text-xl text-black font-sans">John Doe</div>
+                    <div className="text-center text-xl text-black font-sans">{admin.name} {admin.lastname}</div>
                 </div>
                 <div className="flex flex-col items-center w-full pt-16 text-2xl font-medium text-gray-700">
                     <Link

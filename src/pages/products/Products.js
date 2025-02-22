@@ -1,59 +1,66 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { FaCheck, FaTrash, FaPencilAlt } from 'react-icons/fa';
 import { ImCross } from "react-icons/im";
 import { useDropzone } from 'react-dropzone';
-
+import { fetchProducts, addProduct, updateProduct, removeProduct } from '../../redux/slices/productSlice';
+import axios from '../../utils/axios'
+import { set } from "react-hook-form";
 
 const Products = () => {
+  const { subcategoryId, categoryId } = useParams();
+  const dispatch = useDispatch();
+  const [attributes, setAttributes] = useState([]);
+  useEffect(() => {
+    axios.get(`/subcategory/${subcategoryId}/attributes`).then((res) => {
+      setAttributes(res.data)
+    }).catch((err) => {
+      console.log(err);
+    })
+  }, [subcategoryId])
+
+  const [key, setKey] = useState("");
+  const [value, setValue] = useState("");
+
+  const { data: productsData, status } = useSelector((state) => state.product);
+
+  console.log(productsData)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editProductId, setEditProductId] = useState(null);
   const [newProduct, setNewProduct] = useState({
-    serialNumber: "",
     name: "",
+    prod_id: "",
     price: "",
-    imgSrc: "",
-    inStock: true,
-    isNew: false,
-    date: "",
+    description: "",
+    images: [],
+    categoryId: categoryId,
+    quantity: "",
+    subcategoryId: subcategoryId,
+    attributes: {}
   });
 
-  const [productsData, setProductsData] = useState([
-    {
-      id: 1,
-      serialNumber: "IPC3624LE-ADF28K-WL",
-      name: "4 არხიანი IP ვიდეო ჩამწერი ",
-      price: "151.49ლ",
-      imgSrc: "https://b2b-front-chi.vercel.app/static/media/1707289109360.04e7d71b90c0fab7bf09.png",
-      inStock: true,
-      isNew: true,
-      date: "2024-08-01"
-    },
-    {
-      id: 2,
-      serialNumber: "IPC3624LE-ADF28K-WL",
-      name: "4 არხიანი IP ვიდეო ჩამწერი",
-      price: "114.97ლ",
-      imgSrc: "https://b2b-front-chi.vercel.app/static/media/1707289109360.04e7d71b90c0fab7bf09.png",
-      inStock: false,
-      isNew: false,
-      date: "2024-09-14"
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchProducts({ subcategoryId }));
     }
-  ]);
+  }, [status, dispatch, subcategoryId]);
 
   const handleModalToggle = () => {
     setIsModalOpen(!isModalOpen);
     if (!isModalOpen) {
-      // Reset form when opening modal for Add Product
       setIsEditMode(false);
       setNewProduct({
-        serialNumber: "",
         name: "",
+        prod_id: "",
         price: "",
-        imgSrc: "",
-        inStock: true,
-        isNew: false,
-        date: "",
+        description: "",
+        images: [],
+        categoryId: categoryId,
+        quantity: "",
+        subcategoryId: subcategoryId,
+        attributes: {}
       });
     }
   };
@@ -66,42 +73,71 @@ const Products = () => {
     });
   };
 
-  const handleImageDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewProduct({
-          ...newProduct,
-          imgSrc: reader.result,
-        });
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleImageDrop = (acceptedFiles) => {
+    setNewProduct({
+      ...newProduct,
+      images: acceptedFiles.map(file => URL.createObjectURL(file))
+    });
   };
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: handleImageDrop,
+    accept: 'image/*'
+  });
+
+  const handleAttributeChange = (name, value) => {
+    setNewProduct((prevProduct) => ({
+        ...prevProduct,
+        attributes: {
+            ...prevProduct.attributes,
+            [name]: value
+        }
+    }));
+};
+
+const handleRemoveAttribute = (name) => {
+    const updatedAttributes = { ...newProduct.attributes };
+    delete updatedAttributes[name];
+
+    setNewProduct({
+        ...newProduct,
+        attributes: updatedAttributes
+    });
+};
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!newProduct.serialNumber || !newProduct.name || !newProduct.price || !newProduct.imgSrc || !newProduct.date) {
+    if (!newProduct.name || !newProduct.prod_id || !newProduct.price || !newProduct.description || !newProduct.quantity) {
       alert("გთხოვთ შეავსოთ ყველა ველი.");
       return;
     }
 
-    // Add the new product to the list
     if (isEditMode) {
-      setProductsData((prevProducts) =>
-        prevProducts.map((product) =>
-          product.id === editProductId ? { ...newProduct, id: editProductId } : product
-        )
-      );
+      dispatch(updateProduct({ id: editProductId, data: {
+          prod_id: newProduct.prod_id,
+          name: newProduct.name,
+          price: newProduct.price,
+          categoryId: categoryId,
+          description: newProduct.description,
+          quantity: newProduct.quantity,
+          attributes: newProduct.attributes
+      } }));
     } else {
-      const newProductWithId = { ...newProduct, id: productsData.length + 1 };
-      setProductsData((prevProducts) => [...prevProducts, newProductWithId]);
+      dispatch(addProduct({
+        data: {
+          prod_id: newProduct.prod_id,
+          name: newProduct.name,
+          price: newProduct.price,
+          description: newProduct.description,
+          categoryId: categoryId,
+          subcategoryId: subcategoryId,
+          quantity: newProduct.quantity,
+          attributes: newProduct.attributes
+        }
+      }));
     }
 
-    // Close the modal and reset form
     handleModalToggle();
   };
 
@@ -133,8 +169,7 @@ const Products = () => {
                   &times;
                 </button>
                 <h3 className="text-2xl font-semibold mb-4">{isEditMode ? "პროდუქტის რედაქტირება" : "პროდუქტის დამატება"}</h3>
-                <form onSubmit={handleSubmit}>
-                  {/* Form Fields for Product */}
+                <form onSubmit={handleSubmit} className=" overflow-y-auto max-h-[500px] pr-10">
                   <div className="mb-4">
                     <label className="block text-sm font-medium">სახელი</label>
                     <input
@@ -146,11 +181,11 @@ const Products = () => {
                     />
                   </div>
                   <div className="mb-4">
-                    <label className="block text-sm font-medium">სერიული ნომერი</label>
+                    <label className="block text-sm font-medium">პროდუქტის ID</label>
                     <input
                       type="text"
-                      name="serialNumber"
-                      value={newProduct.serialNumber}
+                      name="prod_id"
+                      value={newProduct.prod_id}
                       onChange={handleInputChange}
                       className="border w-full p-2 mt-1"
                     />
@@ -166,50 +201,105 @@ const Products = () => {
                     />
                   </div>
                   <div className="mb-4">
-                    <label className="block text-sm font-medium">ფოტო</label>
-                    {/* Drag and Drop for Image */}
-                    <div
-                      onDrop={handleImageDrop}
-                      onDragOver={(e) => e.preventDefault()}
-                      className="border-2 border-dashed p-4 mt-1 flex justify-center items-center"
-                    >
-                      {newProduct.imgSrc ? (
-                        <img src={newProduct.imgSrc} alt="Uploaded" className="max-w-full h-32 object-contain" />
-                      ) : (
-                        <span className="text-gray-500">გადაიყვანეთ სურათი აქ</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium">თარიღი</label>
-                    <input
-                      type="date"
-                      name="date"
-                      value={newProduct.date}
+                    <label className="block text-sm font-medium">აღწერა</label>
+                    <textarea
+                      name="description"
+                      value={newProduct.description}
                       onChange={handleInputChange}
                       className="border w-full p-2 mt-1"
                     />
                   </div>
                   <div className="mb-4">
-                    <label className="block text-sm font-medium">ახალი</label>
+                    <label className="block text-sm font-medium">ფოტოები</label>
+                    {/* Drag and Drop for Images */}
+                    <div {...getRootProps()} className="border-2 border-dashed p-4 mt-1 flex justify-center items-center">
+                      <input {...getInputProps()} />
+                      {newProduct.images.length ? (
+                        newProduct.images.map((image, index) => (
+                          <img key={index} src={image} alt="Uploaded" className="max-w-full h-32 object-contain mx-2" />
+                        ))
+                      ) : (
+                        <span className="text-gray-500">გადაიყვანეთ სურათები აქ</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium">რაოდენობა</label>
                     <input
-                      type="checkbox"
-                      name="isNew"
-                      checked={newProduct.isNew}
-                      onChange={(e) => setNewProduct({ ...newProduct, isNew: e.target.checked })}
-                      className="mt-1"
+                      type="text"
+                      name="quantity"
+                      value={newProduct.quantity}
+                      onChange={handleInputChange}
+                      className="border w-full p-2 mt-1"
                     />
                   </div>
                   <div className="w-full justify-end flex">
               </div>
-                <h2>მახასიათებლები</h2>
+                <h2>Attributes</h2>
                 <div className="w-full overflow-y-auto max-h-[500px] my-2 gap-2 flex flex-col py-2">
-                  <div className="flex gap-2">
-                    <h2 className="px-2 border rounded-full">GPU</h2>
-                    <input className="w-full px-2 border rounded-full"/>
+                  {Object.entries(newProduct.attributes).map(([key, value], index) => (
+                    <div key={index} className="flex gap-2">
+                      <p
+                        type="text"
+                        disabled={attributes?.includes(key)}
+                        className="w-full flex justify-start items-center px-2 border rounded-full"
+                        placeholder="Attribute Name"
+                      >{key}</p>
+                      <p
+                        type="text"
+                        onChange={(e) => handleAttributeChange(key, e.target.value)}
+                        className="w-full flex justify-start items-center px-2 border rounded-full"
+                        placeholder="Attribute Value"
+                      >{value}</p>
+                      <button 
+                        type="button" 
+                        onClick={() => handleRemoveAttribute(key)} 
+                        className="bg-red-500 text-white p-2 rounded"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* Add Attribute Button */}
+                  {/* {Object.entries(attributes?.map((attr) => ({ name: attr, value: "" })).reduce((acc, item) => {
+                        acc[item.name] = item.value;
+                        return acc;
+                    }, {})).map(([key, value], index) => (
+                        <div>
+                            <p>{key} - {value}</p>
+                        </div>
+                    ))} */}
+                  <div className="flex">
+                    <input
+                        type="text"
+                        className="w-full px-2 border rounded-full"
+                        placeholder="Attribute Name"
+                        value={key}
+                        onChange={(e) => setKey(e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      onChange={(e) => setValue(e.target.value)}
+                      className="w-full px-2 border rounded-full"
+                      placeholder="Attribute Value"
+                      value={value}
+                    />
+                    <button type="button" onClick={() => {
+                      if(!key || !value) return;
+                      setNewProduct({
+                        ...newProduct,
+                        attributes: {
+                          ...newProduct.attributes,
+                          [key]: value 
+                        }
+                      });
+                      setKey("");
+                      setValue("");
+                    }} className="bg-blue-500 text-white p-2 rounded mt-2">Add</button>
                   </div>
-                  
                 </div>
+
 
                   <button
                     type="submit"
@@ -227,11 +317,11 @@ const Products = () => {
 
       {/* Products List */}
       <div className="grid grid-cols-1 2xl:grid-cols-4 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-6">
-        {productsData.map((product) => (
-          <div key={product.id} className="border p-4 rounded-lg shadow-lg">
-            <img src={product.imgSrc} alt={product.name} className="h-32 object-contain mx-auto mb-4" />
+        {productsData?.map((product) => (
+          <div key={product._id} className="border p-4 rounded-lg shadow-lg">
+            {/* <img src={product.images[0]} alt={product.name} className="h-32 object-contain mx-auto mb-4" /> */}
             <h4 className="text-lg font-semibold mb-2">{product.name}</h4>
-            <p className="text-sm text-gray-500">{product.serialNumber}</p>
+            <p className="text-sm text-gray-500">{product.prod_id}</p>
             <p className="text-sm text-gray-500">{product.price}</p>
             <div className="flex justify-between mt-4">
               <button
@@ -240,7 +330,7 @@ const Products = () => {
                   setIsModalOpen(true);
                   setIsEditMode(true);
                   setNewProduct(product);
-                  setEditProductId(product.id);
+                  setEditProductId(product._id);
                 }}
               >
                 <FaPencilAlt />
@@ -248,7 +338,7 @@ const Products = () => {
               <button
                 className="text-red-500"
                 onClick={() => {
-                  setProductsData(productsData.filter((item) => item.id !== product.id));
+                  dispatch(removeProduct(product._id));
                 }}
               >
                 <FaTrash />
